@@ -65,6 +65,7 @@ def login():
         flask.current_app.session_interface.regenerate(flask.session)
         flask.session['username'] = email
         flask.session['groups'] = list(user.groups)
+        # flask.session['roles'] = list(user.roles)
         return redirect(url_for('home'))
     return LOGIN_FORM
 

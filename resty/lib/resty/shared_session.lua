@@ -13,7 +13,7 @@ end
 -- end stolen
 
 local _M = new_tab(0, 7)
-_M._VERSION = '0.1.1-2'
+_M._VERSION = '0.2.1'
 
 
 local ck = require "resty.cookie"
@@ -63,6 +63,10 @@ local function get_redis_groups_key(prefix, sid)
     return prefix .. ":groups:" .. sid
 end
 
+local function get_redis_roles_key(prefix, sid)
+    return prefix .. ":roles:" .. sid
+end
+
 function _M.verify_signature(self)
     local key = get_redis_signature_key(self._redis_prefix, self._sid)
     local actual_sig, err = self._redis_conn:get(key)
@@ -105,6 +109,25 @@ function _M.is_group_member(self, group)
     end
     for _, ns_name in pairs(allowed) do
         if ns_name == group then
+            return true, nil
+        end
+    end
+    return nil, "not allowed"
+end
+
+function _M.list_allowed_roles(self)
+    local key = get_redis_roles_key(self._redis_prefix, self._sid)
+    local data, err = self._redis_conn:smembers(key)
+    return data, err
+end
+
+function _M.is_role_member(self, role)
+    local allowed, err = self:list_allowed_roles()
+    if not allowed then
+        return nil, err
+    end
+    for _, ns_name in pairs(allowed) do
+        if ns_name == role then
             return true, nil
         end
     end

@@ -171,6 +171,10 @@ class RedisSessionInterface(SessionInterface):
         return str_fmt('%s:groups:%s', self.key_prefix, session_id)
 
     @returns_bytes
+    def _get_redis_roles_key(self, session_id):
+        return str_fmt('%s:roles:%s', self.key_prefix, session_id)
+
+    @returns_bytes
     def _get_redis_signature_key(self, session_id):
         return str_fmt('%s:signature:%s', self.key_prefix, session_id)
 
@@ -178,6 +182,7 @@ class RedisSessionInterface(SessionInterface):
         return [
             self._get_redis_data_key(session_id),
             self._get_redis_groups_key(session_id),
+            self._get_redis_roles_key(session_id),
             self._get_redis_signature_key(session_id)
         ]
 
@@ -224,6 +229,7 @@ class RedisSessionInterface(SessionInterface):
 
         session_data_key = self._get_redis_data_key(session.sid)
         session_groups_key = self._get_redis_groups_key(session.sid)
+        session_roles_key = self._get_redis_roles_key(session.sid)
         session_sig_key = self._get_redis_signature_key(session.sid)
         ttl = total_seconds(app.permanent_session_lifetime)
 
@@ -238,10 +244,16 @@ class RedisSessionInterface(SessionInterface):
         )
         pipeline.delete(session_groups_key)
         group_ids = session.get('groups', None)
+        pipeline.delete(session_roles_key)
+        role_ids = session.get('roles', None)
         if group_ids:
             group_ids = list(set(group_ids))
             pipeline.sadd(session_groups_key, *group_ids)
             pipeline.expire(session_groups_key, time=ttl)
+        if role_ids:
+            role_ids = list(set(role_ids))
+            pipeline.sadd(session_roles_key, *role_ids)
+            pipeline.expire(session_roles_key, time=ttl)
         pipeline.execute()
         response.set_cookie(app.session_cookie_name, session_cookie_val,
                             expires=expires, httponly=httponly,

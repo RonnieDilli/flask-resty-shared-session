@@ -70,4 +70,10 @@ else
     return fail_auth(403, err)
 end
 
+local ok, err = session:is_role_member(ngx.var.role_id)
+if ok then
+    return ngx.exec("@internal_cacheable_role_resource")
+else
+    return fail_auth(403, err)
+end
 
