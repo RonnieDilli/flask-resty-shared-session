@@ -1,9 +1,9 @@
 package = "resty-shared-session"
-version = "0.2.1-1"
+version = "0.2.1-2"
 
 source = {
   url = "git@github.com/RonnieDilli/flask-resty-shared-session.git",
-  tag = "v0.2.1-1",
+  tag = "v0.2.1-2",
 }
 
 description = {
