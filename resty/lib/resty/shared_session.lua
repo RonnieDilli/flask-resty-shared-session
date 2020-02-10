@@ -13,7 +13,7 @@ end
 -- end stolen
 
 local _M = new_tab(0, 7)
-_M._VERSION = '0.2.1-4'
+_M._VERSION = '0.2.1-5'
 
 
 local ck = require "resty.cookie"
