@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='flask-resty-shared-session',
-    version='0.2.2-1',
+    version='0.2.2-2',
     url='https://github.com/RonnieDilli/flask-resty-shared-session',
     license='BSD',
     author='Scott Ivey',
